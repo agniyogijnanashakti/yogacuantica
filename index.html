@@ -1,0 +1,564 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Camino de Yoga Cuántico</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Crimson+Pro:ital,wght@0,300;0,400;1,300;1,400&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #080810;
+    --surface: #0e0e1a;
+    --text: #e2d9c8;
+    --text-dim: rgba(226,217,200,0.5);
+    --text-faint: rgba(226,217,200,0.2);
+    --accent: rgba(160,120,240,0.85);
+    --accent-dim: rgba(160,120,240,0.35);
+    --accent-faint: rgba(160,120,240,0.1);
+    --gold: rgba(210,175,100,0.7);
+    --gold-faint: rgba(210,175,100,0.15);
+    --border: rgba(226,217,200,0.07);
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Crimson Pro', Georgia, serif;
+    min-height: 100vh;
+    overflow-x: hidden;
+    cursor: default;
+  }
+
+  /* ── Starfield ── */
+  #starfield {
+    position: fixed; inset: 0; pointer-events: none; z-index: 0;
+    overflow: hidden;
+  }
+  .star {
+    position: absolute;
+    border-radius: 50%;
+    background: white;
+    animation: twinkle var(--d, 4s) ease-in-out infinite var(--delay, 0s);
+  }
+  @keyframes twinkle {
+    0%,100% { opacity: var(--min-op, 0.1); }
+    50% { opacity: var(--max-op, 0.6); }
+  }
+
+  /* ── Nebula glows ── */
+  #nebula {
+    position: fixed; inset: 0; pointer-events: none; z-index: 0;
+    background:
+      radial-gradient(ellipse 55% 35% at 15% 25%, rgba(80,40,160,0.14) 0%, transparent 70%),
+      radial-gradient(ellipse 40% 50% at 85% 75%, rgba(30,60,130,0.10) 0%, transparent 70%),
+      radial-gradient(ellipse 70% 40% at 60% 10%, rgba(120,50,80,0.07) 0%, transparent 60%);
+  }
+
+  /* ── Layout ── */
+  #app {
+    position: relative; z-index: 1;
+    max-width: 720px;
+    margin: 0 auto;
+    padding: 0 28px 100px;
+    min-height: 100vh;
+  }
+
+  /* ── Cover ── */
+  #cover {
+    padding-top: 80px;
+    text-align: center;
+    animation: riseIn 1s cubic-bezier(.22,1,.36,1) both;
+  }
+
+  .cover-tag {
+    display: inline-block;
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 10px;
+    letter-spacing: 0.5em;
+    text-transform: uppercase;
+    color: var(--accent);
+    border-bottom: 1px solid var(--accent-dim);
+    padding-bottom: 10px;
+    margin-bottom: 36px;
+  }
+
+  .cover-title {
+    font-family: 'Cormorant Garamond', serif;
+    font-weight: 300;
+    font-size: clamp(2.6rem, 7vw, 4.2rem);
+    line-height: 1.08;
+    letter-spacing: -0.02em;
+    color: #f4ede0;
+    margin-bottom: 20px;
+  }
+  .cover-title em {
+    font-style: italic;
+    color: var(--accent);
+    display: block;
+  }
+
+  .cover-subtitle {
+    font-family: 'Crimson Pro', serif;
+    font-size: 16px;
+    font-style: italic;
+    color: var(--text-dim);
+    letter-spacing: 0.06em;
+    margin-bottom: 56px;
+  }
+
+  .cover-divider {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 20px;
+    margin-bottom: 64px;
+  }
+  .cover-divider::before,
+  .cover-divider::after {
+    content: '';
+    width: 80px;
+    height: 1px;
+    background: linear-gradient(to right, transparent, var(--accent-dim));
+  }
+  .cover-divider::after {
+    background: linear-gradient(to left, transparent, var(--accent-dim));
+  }
+  .cover-ornament {
+    font-size: 18px;
+    color: var(--accent-dim);
+  }
+
+  /* ── Index ── */
+  #index { animation: riseIn 0.8s cubic-bezier(.22,1,.36,1) 0.2s both; }
+
+  .index-label {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 10px;
+    letter-spacing: 0.4em;
+    text-transform: uppercase;
+    color: var(--text-faint);
+    margin-bottom: 24px;
+  }
+
+  .chapter-btn {
+    display: flex;
+    align-items: flex-start;
+    gap: 22px;
+    width: 100%;
+    text-align: left;
+    background: transparent;
+    border: 1px solid var(--border);
+    border-radius: 3px;
+    padding: 20px 22px;
+    margin-bottom: 5px;
+    cursor: pointer;
+    color: var(--text);
+    font-family: inherit;
+    transition: background 0.25s, border-color 0.25s, transform 0.2s;
+    position: relative;
+    overflow: hidden;
+  }
+  .chapter-btn::before {
+    content: '';
+    position: absolute;
+    left: 0; top: 0; bottom: 0;
+    width: 2px;
+    background: var(--accent);
+    transform: scaleY(0);
+    transform-origin: bottom;
+    transition: transform 0.3s cubic-bezier(.22,1,.36,1);
+  }
+  .chapter-btn:hover {
+    background: var(--accent-faint);
+    border-color: var(--accent-dim);
+    transform: translateX(3px);
+  }
+  .chapter-btn:hover::before { transform: scaleY(1); }
+
+  .chapter-num {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 10px;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    color: var(--accent-dim);
+    min-width: 56px;
+    padding-top: 4px;
+    flex-shrink: 0;
+  }
+  .chapter-title-idx {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 17px;
+    font-weight: 400;
+    color: rgba(226,217,200,0.88);
+    line-height: 1.4;
+  }
+
+  .cover-footer {
+    text-align: center;
+    margin-top: 72px;
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 11px;
+    letter-spacing: 0.4em;
+    text-transform: uppercase;
+    color: var(--accent-dim);
+  }
+
+  /* ── Chapter View ── */
+  #chapter-view {
+    padding-top: 52px;
+    display: none;
+  }
+  #chapter-view.active {
+    display: block;
+    animation: riseIn 0.5s cubic-bezier(.22,1,.36,1) both;
+  }
+
+  .back-btn {
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: var(--text-faint);
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 11px;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 60px;
+    padding: 0;
+    transition: color 0.2s;
+  }
+  .back-btn:hover { color: var(--accent); }
+  .back-btn svg { transition: transform 0.2s; }
+  .back-btn:hover svg { transform: translateX(-3px); }
+
+  .chapter-eyebrow {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 10px;
+    letter-spacing: 0.45em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 14px;
+  }
+
+  .chapter-heading {
+    font-family: 'Cormorant Garamond', serif;
+    font-weight: 300;
+    font-size: clamp(1.6rem, 5vw, 2.4rem);
+    line-height: 1.2;
+    color: #f4ede0;
+    margin-bottom: 52px;
+    letter-spacing: -0.01em;
+  }
+
+  .chapter-body {
+    border-left: 1px solid var(--accent-dim);
+    padding-left: 28px;
+    margin-bottom: 64px;
+  }
+  .chapter-body p {
+    font-size: 17.5px;
+    line-height: 1.9;
+    color: rgba(226,217,200,0.82);
+    margin-bottom: 26px;
+    font-weight: 300;
+  }
+  .chapter-body p:last-child { margin-bottom: 0; }
+
+  /* ── Chapter Nav ── */
+  .chapter-nav {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-top: 1px solid var(--border);
+    padding-top: 32px;
+    gap: 16px;
+  }
+
+  .nav-btn {
+    background: none;
+    border: 1px solid var(--border);
+    border-radius: 3px;
+    padding: 12px 18px;
+    cursor: pointer;
+    color: var(--text-dim);
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 11px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    transition: all 0.2s;
+    min-width: 80px;
+  }
+  .nav-btn:hover:not(:disabled) {
+    background: var(--accent-faint);
+    border-color: var(--accent-dim);
+    color: var(--accent);
+  }
+  .nav-btn:disabled {
+    opacity: 0.2;
+    cursor: default;
+  }
+  .nav-btn.next { margin-left: auto; }
+
+  .nav-progress {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 11px;
+    letter-spacing: 0.2em;
+    color: var(--text-faint);
+    white-space: nowrap;
+  }
+
+  /* ── Animations ── */
+  @keyframes riseIn {
+    from { opacity: 0; transform: translateY(20px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  /* ── Transition overlay ── */
+  #overlay {
+    position: fixed; inset: 0; z-index: 100;
+    background: var(--bg);
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 0.28s ease;
+  }
+  #overlay.fading { opacity: 1; }
+
+  /* ── Scrollbar ── */
+  ::-webkit-scrollbar { width: 4px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: var(--accent-dim); border-radius: 2px; }
+</style>
+</head>
+<body>
+
+<div id="nebula"></div>
+<div id="starfield"></div>
+<div id="overlay"></div>
+
+<div id="app">
+
+  <!-- COVER & INDEX -->
+  <div id="home-view">
+    <div id="cover">
+      <div class="cover-tag">Filosofía &middot; Psicología &middot; Física</div>
+      <h1 class="cover-title">
+        Camino de
+        <em>Yoga Cuántico</em>
+      </h1>
+      <p class="cover-subtitle">Una filosofía del ser en superposición</p>
+      <div class="cover-divider"><span class="cover-ornament">✦</span></div>
+    </div>
+
+    <div id="index">
+      <p class="index-label">Contenidos</p>
+      <div id="chapter-list"></div>
+      <div class="cover-footer">Carpe Diem</div>
+    </div>
+  </div>
+
+  <!-- CHAPTER VIEW -->
+  <div id="chapter-view">
+    <button class="back-btn" onclick="goHome()">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><polyline points="15 18 9 12 15 6"/></svg>
+      Índice
+    </button>
+    <div class="chapter-eyebrow" id="ch-number"></div>
+    <h2 class="chapter-heading" id="ch-title"></h2>
+    <div class="chapter-body" id="ch-body"></div>
+    <div class="chapter-nav">
+      <button class="nav-btn prev" id="btn-prev" onclick="navChapter(-1)">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"/></svg>
+        <span id="prev-label"></span>
+      </button>
+      <span class="nav-progress" id="nav-progress"></span>
+      <button class="nav-btn next" id="btn-next" onclick="navChapter(1)">
+        <span id="next-label"></span>
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+      </button>
+    </div>
+  </div>
+
+</div>
+
+<script>
+const CHAPTERS = [
+  {
+    number: "Prólogo",
+    title: "El observador que colapsa el mundo",
+    content: [
+      "Todo sistema cuántico existe en superposición hasta que es observado. El acto de observar colapsa la función de onda: de lo potencial emerge lo real.",
+      "El ser humano es, en su esencia, un observador. Pero a diferencia del instrumento de medición físico, el observador consciente no solo colapsa la realidad exterior: también se colapsa a sí mismo.",
+      "Este libro es una cartografía de ese proceso. No una doctrina. Una herramienta para quien ya sospecha que la realidad es más porosa de lo que la mente ordinaria admite.",
+      "El Camino de Yoga Cuántico no prescribe posiciones corporales ni dogmas metafísicos. Es una disciplina de la atención: la práctica sistemática de habitar el instante con precisión creciente.",
+      "Carpe Diem no es un hedonismo superficial. Es una ontología: el presente es el único dominio donde el ser colapsa desde posibilidad hacia acto."
+    ]
+  },
+  {
+    number: "I",
+    title: "La teoría M y el yo múltiple",
+    content: [
+      "La teoría M postula once dimensiones y un multiverso de membranas vibrantes. Desde la física, esto no es metáfora: es la arquitectura más plausible del cosmos.",
+      "Para la psicología del yo, esta estructura es iluminadora. El yo no es una sustancia fija sino un patrón vibracional que se actualiza en cada instante. Lo que llamamos \"identidad\" es la coherencia estadística de esos patrones a través del tiempo.",
+      "Jung denominó al yo la función sintética del psiquismo: no es el centro de la conciencia, sino su intento de narrativa continua. Desde el Camino, el yo es una membrana: permeable, vibratoria, en permanente negociación con otras membranas —otras personas, otros posibles yos propios.",
+      "La patología psicológica más frecuente es la rigidez de membrana: el yo que se cierra, que deja de vibrar, que confunde su forma actual con su forma definitiva.",
+      "La práctica: percibir el yo como proceso, no como cosa. Observar sus oscilaciones sin identificarse compulsivamente con ninguna de sus fases."
+    ]
+  },
+  {
+    number: "II",
+    title: "El presente como colapso de posibilidad",
+    content: [
+      "En mecánica cuántica, el principio de superposición establece que un sistema existe en todos sus estados posibles simultáneamente hasta que la medición fuerza la actualización de uno. El pasado es un colapso ya ocurrido —irreversible. El futuro es superposición pura —probabilidad sin forma.",
+      "El presente es el borde: el único punto donde el observador puede incidir.",
+      "La mente ordinaria —lo que Tolle denomina el \"dolor-cuerpo\" y la tradición budista llama samsara— oscila compulsivamente entre la memoria del colapso pasado y la ansiedad ante el colapso futuro. Ninguno de esos dominios es modificable desde la acción presente.",
+      "El Camino es una disciplina de retorno al borde. No como negación del pasado o el futuro, sino como reconocimiento de que el único lugar donde la conciencia puede ejercer causalidad es el instante en curso.",
+      "Carpe Diem, comprendido así, no es impulsividad. Es precisión ontológica: actuar desde el único punto de contacto real con la realidad."
+    ]
+  },
+  {
+    number: "III",
+    title: "Entrelazamiento y relación",
+    content: [
+      "El entrelazamiento cuántico describe dos partículas que, una vez en contacto, mantienen correlación instantánea independientemente de la distancia. Medir una define el estado de la otra, sin señal que viaje entre ellas.",
+      "En psicología vincular, algo análogo ocurre: dos seres que se han encontrado en profundidad no retornan a su independencia original. El campo compartido persiste. No como dependencia patológica, sino como transformación estructural mutua.",
+      "La honestidad —valor central de este camino— es la práctica que mantiene limpio ese campo. La deshonestidad introduce interferencia: distorsiona el entrelazamiento, genera ruido donde podría haber resonancia.",
+      "La relación auténtica no aspira a fusión —eso es confusión de membranas— ni a distancia protectora —eso es aislamiento de membrana. Aspira a contacto preciso: dos vibraciones que se reconocen sin anularse.",
+      "El amor, en este marco, no es un estado emocional sino un modo de atención: la disposición a ver al otro en su singularidad, sin proyectarlo sobre la pantalla del propio sistema de referencia."
+    ]
+  },
+  {
+    number: "IV",
+    title: "El yoga como laboratorio de presencia",
+    content: [
+      "El yoga no es gimnasia. No es estiramiento sofisticado ni estética de bienestar. En su raíz etimológica —yuj, unir— el yoga es la práctica de reunir lo que la mente fragmenta: cuerpo y conciencia, instante y atención, movimiento y quietud.",
+      "En términos cuánticos, el yoga es un colapso deliberado: la práctica de forzar la superposición dispersa del pensamiento hacia un punto de actualización presente. Cada postura —asana— es una pregunta que el cuerpo le hace a la conciencia: ¿estás aquí?",
+      "La respiración es el operador fundamental. El pranayama no regula el aire; regula la atención. Al anclar la conciencia en el ciclo respiratorio, se interrumpe el bucle automático del pensamiento compulsivo. El sistema nervioso autónomo —que opera por debajo del umbral del yo— es reclutado hacia la presencia.",
+      "La dificultad de una postura no reside en la flexibilidad muscular. Reside en la capacidad de permanecer como observador mientras el cuerpo reporta incomodidad. Esta es la práctica central del Camino: no eliminar la tensión, sino aprender a habitarla sin colapsar en la reacción.",
+      "El yoga cuántico no tiene estilo fijo. Puede ser vinyasa, kundalini, yin, pranayama puro o meditación sentada. Lo que define la práctica no es la forma sino la calidad de la atención que la atraviesa. Una postura hecha con la mente en el pasado es gimnasia. La misma postura habitada desde el borde del instante es yoga."
+    ]
+  },
+  {
+    number: "V",
+    title: "La aceptación como acto cuántico",
+    content: [
+      "Aceptar no es resignarse. La resignación es una rendición del querer —el deseo que abdica. La aceptación es un reconocimiento del colapso ya ocurrido: este estado es el estado actual del sistema. Negarle existencia no lo modifica; solo divide la energía disponible para la acción.",
+      "El duelo —de una relación, de una identidad, de un sueño— es el proceso de actualizar el mapa cognitivo-emocional a la nueva topología de la realidad. Un proceso que no tiene atajos, pero que puede tener acompañamiento: la filosofía, la psicología, la presencia de textos como El Poder del Ahora, que señalan que el sufrimiento surge no del evento sino de la resistencia al evento.",
+      "En términos cuánticos: el colapso ya ocurrió. La función de onda de ese estado posible se contrajo. Resistir el colapso es intentar reabrir una superposición que ya no existe.",
+      "La aceptación libera la energía que estaba detenida en la resistencia. Esa energía disponible es la materia prima del siguiente colapso —del próximo instante elegido con presencia."
+    ]
+  },
+  {
+    number: "Epílogo",
+    title: "El camino no termina: colapsa",
+    content: [
+      "Este libro no concluye porque el Camino no tiene destino fijo. Tiene dirección: mayor presencia, mayor honestidad, mayor capacidad de contacto con lo real.",
+      "Cada práctica —corporal, filosófica, relacional— es un laboratorio del mismo principio: el observador que se vuelve más preciso colapsa realidades de mayor coherencia.",
+      "La teoría M nos dice que existen dimensiones que no percibimos. La psicología nos dice que existen estratos del psiquismo que no habitamos conscientemente. El yoga cuántico no pretende acceder a todos ellos. Pretende ampliar el rango: que el ser que lee estas páginas pueda habitar con mayor plenitud el espectro que ya le pertenece.",
+      "Carpe Diem.",
+      "No como mandato. Como descripción de lo único que, en rigor, existe: este instante, esta conciencia, esta posibilidad de colapsar algo verdadero."
+    ]
+  }
+];
+
+let current = null;
+const overlay = document.getElementById('overlay');
+
+// Build index
+const list = document.getElementById('chapter-list');
+CHAPTERS.forEach((ch, i) => {
+  const btn = document.createElement('button');
+  btn.className = 'chapter-btn';
+  btn.innerHTML = `<span class="chapter-num">${ch.number}</span><span class="chapter-title-idx">${ch.title}</span>`;
+  btn.addEventListener('click', () => openChapter(i));
+  list.appendChild(btn);
+});
+
+function transition(fn) {
+  overlay.classList.add('fading');
+  setTimeout(() => {
+    fn();
+    overlay.classList.remove('fading');
+    window.scrollTo({ top: 0, behavior: 'instant' });
+  }, 280);
+}
+
+function openChapter(idx) {
+  transition(() => {
+    current = idx;
+    renderChapter();
+    document.getElementById('home-view').style.display = 'none';
+    const cv = document.getElementById('chapter-view');
+    cv.classList.add('active');
+  });
+}
+
+function goHome() {
+  transition(() => {
+    current = null;
+    document.getElementById('home-view').style.display = 'block';
+    const cv = document.getElementById('chapter-view');
+    cv.classList.remove('active');
+  });
+}
+
+function navChapter(dir) {
+  const next = current + dir;
+  if (next < 0 || next >= CHAPTERS.length) return;
+  transition(() => {
+    current = next;
+    renderChapter();
+  });
+}
+
+function renderChapter() {
+  const ch = CHAPTERS[current];
+  document.getElementById('ch-number').textContent = ch.number;
+  document.getElementById('ch-title').textContent = ch.title;
+  const body = document.getElementById('ch-body');
+  body.innerHTML = ch.content.map(p => `<p>${p}</p>`).join('');
+
+  const prevBtn = document.getElementById('btn-prev');
+  const nextBtn = document.getElementById('btn-next');
+  const prevLabel = document.getElementById('prev-label');
+  const nextLabel = document.getElementById('next-label');
+  const progress = document.getElementById('nav-progress');
+
+  prevBtn.disabled = current === 0;
+  nextBtn.disabled = current === CHAPTERS.length - 1;
+  prevLabel.textContent = current > 0 ? CHAPTERS[current - 1].number : '';
+  nextLabel.textContent = current < CHAPTERS.length - 1 ? CHAPTERS[current + 1].number : '';
+  progress.textContent = `${current + 1} / ${CHAPTERS.length}`;
+}
+
+// Starfield
+const sf = document.getElementById('starfield');
+for (let i = 0; i < 90; i++) {
+  const s = document.createElement('div');
+  s.className = 'star';
+  const size = Math.random() < 0.15 ? 2 : 1;
+  const minOp = (0.05 + Math.random() * 0.1).toFixed(2);
+  const maxOp = (0.3 + Math.random() * 0.5).toFixed(2);
+  s.style.cssText = `
+    width:${size}px; height:${size}px;
+    left:${Math.random()*100}%;
+    top:${Math.random()*100}%;
+    --d:${3+Math.random()*5}s;
+    --delay:-${Math.random()*6}s;
+    --min-op:${minOp};
+    --max-op:${maxOp};
+  `;
+  sf.appendChild(s);
+}
+</script>
+</body>
+</html>
