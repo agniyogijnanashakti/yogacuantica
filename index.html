@@ -7,466 +7,562 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Crimson+Pro:ital,wght@0,300;0,400;1,300;1,400&display=swap" rel="stylesheet">
 <style>
-  :root {
-    --bg: #080810;
-    --surface: #0e0e1a;
-    --text: #e2d9c8;
-    --text-dim: rgba(226,217,200,0.5);
-    --text-faint: rgba(226,217,200,0.2);
-    --accent: rgba(160,120,240,0.85);
-    --accent-dim: rgba(160,120,240,0.35);
-    --accent-faint: rgba(160,120,240,0.1);
-    --gold: rgba(210,175,100,0.7);
-    --gold-faint: rgba(210,175,100,0.15);
-    --border: rgba(226,217,200,0.07);
-  }
+:root {
+  --bg: #06060f;
+  --text: #e2d9c8;
+  --text-dim: rgba(226,217,200,0.52);
+  --text-faint: rgba(226,217,200,0.2);
+  --accent: rgba(160,120,240,0.88);
+  --accent-dim: rgba(160,120,240,0.35);
+  --accent-faint: rgba(160,120,240,0.09);
+  --gold: rgba(210,175,100,0.8);
+  --gold-dim: rgba(210,175,100,0.35);
+  --border: rgba(226,217,200,0.07);
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{background:var(--bg);color:var(--text);font-family:'Crimson Pro',Georgia,serif;min-height:100vh;overflow-x:hidden}
 
-  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+/* starfield */
+#starfield{position:fixed;inset:0;pointer-events:none;z-index:0;overflow:hidden}
+.star{position:absolute;border-radius:50%;background:white;animation:twinkle var(--d,4s) ease-in-out infinite var(--delay,0s)}
+@keyframes twinkle{0%,100%{opacity:var(--min-op,.1)}50%{opacity:var(--max-op,.6)}}
 
-  html { scroll-behavior: smooth; }
+/* nebula */
+#nebula{position:fixed;inset:0;pointer-events:none;z-index:0;
+  background:
+    radial-gradient(ellipse 55% 35% at 15% 20%, rgba(80,40,160,0.13) 0%,transparent 70%),
+    radial-gradient(ellipse 40% 55% at 88% 78%, rgba(30,60,130,0.10) 0%,transparent 70%),
+    radial-gradient(ellipse 60% 30% at 55% 5%,  rgba(120,45,80,0.07) 0%,transparent 60%)}
 
-  body {
-    background: var(--bg);
-    color: var(--text);
-    font-family: 'Crimson Pro', Georgia, serif;
-    min-height: 100vh;
-    overflow-x: hidden;
-    cursor: default;
-  }
+/* overlay */
+#overlay{position:fixed;inset:0;z-index:100;background:var(--bg);pointer-events:none;opacity:0;transition:opacity .28s ease}
+#overlay.fading{opacity:1}
 
-  /* ── Starfield ── */
-  #starfield {
-    position: fixed; inset: 0; pointer-events: none; z-index: 0;
-    overflow: hidden;
-  }
-  .star {
-    position: absolute;
-    border-radius: 50%;
-    background: white;
-    animation: twinkle var(--d, 4s) ease-in-out infinite var(--delay, 0s);
-  }
-  @keyframes twinkle {
-    0%,100% { opacity: var(--min-op, 0.1); }
-    50% { opacity: var(--max-op, 0.6); }
-  }
+/* layout */
+#app{position:relative;z-index:1;max-width:740px;margin:0 auto;padding:0 28px 100px;min-height:100vh}
 
-  /* ── Nebula glows ── */
-  #nebula {
-    position: fixed; inset: 0; pointer-events: none; z-index: 0;
-    background:
-      radial-gradient(ellipse 55% 35% at 15% 25%, rgba(80,40,160,0.14) 0%, transparent 70%),
-      radial-gradient(ellipse 40% 50% at 85% 75%, rgba(30,60,130,0.10) 0%, transparent 70%),
-      radial-gradient(ellipse 70% 40% at 60% 10%, rgba(120,50,80,0.07) 0%, transparent 60%);
-  }
+/* ── COVER ── */
+#cover{padding-top:88px;text-align:center;animation:riseIn 1s cubic-bezier(.22,1,.36,1) both}
+.cover-tag{display:inline-block;font-family:'Cormorant Garamond',serif;font-size:10px;letter-spacing:.5em;text-transform:uppercase;color:var(--accent);border-bottom:1px solid var(--accent-dim);padding-bottom:10px;margin-bottom:38px}
+.cover-title{font-family:'Cormorant Garamond',serif;font-weight:300;font-size:clamp(2.6rem,7vw,4.4rem);line-height:1.07;letter-spacing:-.02em;color:#f4ede0;margin-bottom:20px}
+.cover-title em{font-style:italic;color:var(--accent);display:block}
+.cover-subtitle{font-family:'Crimson Pro',serif;font-size:16px;font-style:italic;color:var(--text-dim);letter-spacing:.06em;margin-bottom:18px}
+.cover-dim-note{font-family:'Cormorant Garamond',serif;font-size:11px;letter-spacing:.3em;text-transform:uppercase;color:var(--gold-dim);margin-bottom:52px}
+.cover-divider{display:flex;align-items:center;justify-content:center;gap:18px;margin-bottom:68px}
+.cover-divider::before,.cover-divider::after{content:'';width:80px;height:1px}
+.cover-divider::before{background:linear-gradient(to right,transparent,var(--accent-dim))}
+.cover-divider::after{background:linear-gradient(to left,transparent,var(--accent-dim))}
+.cover-ornament{font-size:18px;color:var(--accent-dim)}
 
-  /* ── Layout ── */
-  #app {
-    position: relative; z-index: 1;
-    max-width: 720px;
-    margin: 0 auto;
-    padding: 0 28px 100px;
-    min-height: 100vh;
-  }
+/* ── INDEX ── */
+#index{animation:riseIn .8s cubic-bezier(.22,1,.36,1) .15s both}
+.index-section-label{font-family:'Cormorant Garamond',serif;font-size:10px;letter-spacing:.45em;text-transform:uppercase;color:var(--text-faint);margin-bottom:12px;margin-top:36px;padding-left:4px}
+.chapter-btn{display:flex;align-items:flex-start;gap:20px;width:100%;text-align:left;background:transparent;border:1px solid var(--border);border-radius:3px;padding:18px 22px;margin-bottom:4px;cursor:pointer;color:var(--text);font-family:inherit;transition:background .22s,border-color .22s,transform .2s;position:relative;overflow:hidden}
+.chapter-btn::before{content:'';position:absolute;left:0;top:0;bottom:0;width:2px;background:var(--accent);transform:scaleY(0);transform-origin:bottom;transition:transform .3s cubic-bezier(.22,1,.36,1)}
+.chapter-btn.dim-chapter::before{background:var(--gold)}
+.chapter-btn:hover{background:var(--accent-faint);border-color:var(--accent-dim);transform:translateX(3px)}
+.chapter-btn.dim-chapter:hover{background:rgba(210,175,100,0.06);border-color:var(--gold-dim)}
+.chapter-btn:hover::before{transform:scaleY(1)}
+.ch-num{font-family:'Cormorant Garamond',serif;font-size:10px;letter-spacing:.28em;text-transform:uppercase;color:var(--accent-dim);min-width:60px;padding-top:4px;flex-shrink:0;line-height:1.3}
+.chapter-btn.dim-chapter .ch-num{color:var(--gold-dim)}
+.ch-info{display:flex;flex-direction:column;gap:4px}
+.ch-title-idx{font-family:'Cormorant Garamond',serif;font-size:17px;font-weight:400;color:rgba(226,217,200,.88);line-height:1.35}
+.ch-dim-name{font-family:'Crimson Pro',serif;font-size:13px;font-style:italic;color:var(--gold-dim)}
+.cover-footer{text-align:center;margin-top:72px;font-family:'Cormorant Garamond',serif;font-size:11px;letter-spacing:.4em;text-transform:uppercase;color:var(--accent-dim)}
 
-  /* ── Cover ── */
-  #cover {
-    padding-top: 80px;
-    text-align: center;
-    animation: riseIn 1s cubic-bezier(.22,1,.36,1) both;
-  }
+/* ── CHAPTER VIEW ── */
+#chapter-view{padding-top:52px;display:none}
+#chapter-view.active{display:block;animation:riseIn .5s cubic-bezier(.22,1,.36,1) both}
+.back-btn{background:none;border:none;cursor:pointer;color:var(--text-faint);font-family:'Cormorant Garamond',serif;font-size:11px;letter-spacing:.3em;text-transform:uppercase;display:flex;align-items:center;gap:8px;margin-bottom:56px;padding:0;transition:color .2s}
+.back-btn:hover{color:var(--accent)}
+.back-btn:hover svg{transform:translateX(-3px)}
+.back-btn svg{transition:transform .2s}
+.chapter-eyebrow{font-family:'Cormorant Garamond',serif;font-size:10px;letter-spacing:.45em;text-transform:uppercase;color:var(--accent);margin-bottom:6px}
+.chapter-dim-name{font-family:'Crimson Pro',serif;font-size:15px;font-style:italic;color:var(--gold);margin-bottom:16px;letter-spacing:.03em}
+.chapter-heading{font-family:'Cormorant Garamond',serif;font-weight:300;font-size:clamp(1.7rem,5vw,2.6rem);line-height:1.18;color:#f4ede0;margin-bottom:48px;letter-spacing:-.01em}
 
-  .cover-tag {
-    display: inline-block;
-    font-family: 'Cormorant Garamond', serif;
-    font-size: 10px;
-    letter-spacing: 0.5em;
-    text-transform: uppercase;
-    color: var(--accent);
-    border-bottom: 1px solid var(--accent-dim);
-    padding-bottom: 10px;
-    margin-bottom: 36px;
-  }
+/* formula box */
+.formula-box{border:1px solid var(--gold-dim);border-radius:4px;padding:20px 24px;margin-bottom:44px;background:rgba(210,175,100,0.04);text-align:center}
+.formula-label{font-family:'Cormorant Garamond',serif;font-size:10px;letter-spacing:.4em;text-transform:uppercase;color:var(--gold-dim);margin-bottom:10px}
+.formula-expr{font-family:'Cormorant Garamond',serif;font-size:22px;font-style:italic;color:var(--gold);letter-spacing:.04em;line-height:1.5}
+.formula-desc{font-family:'Crimson Pro',serif;font-size:13px;color:var(--text-dim);margin-top:8px;font-style:italic}
 
-  .cover-title {
-    font-family: 'Cormorant Garamond', serif;
-    font-weight: 300;
-    font-size: clamp(2.6rem, 7vw, 4.2rem);
-    line-height: 1.08;
-    letter-spacing: -0.02em;
-    color: #f4ede0;
-    margin-bottom: 20px;
-  }
-  .cover-title em {
-    font-style: italic;
-    color: var(--accent);
-    display: block;
-  }
+/* body text */
+.chapter-body{border-left:1px solid var(--accent-dim);padding-left:28px;margin-bottom:40px}
+.chapter-body p{font-size:17.5px;line-height:1.9;color:rgba(226,217,200,.82);margin-bottom:26px;font-weight:300}
+.chapter-body p:last-child{margin-bottom:0}
 
-  .cover-subtitle {
-    font-family: 'Crimson Pro', serif;
-    font-size: 16px;
-    font-style: italic;
-    color: var(--text-dim);
-    letter-spacing: 0.06em;
-    margin-bottom: 56px;
-  }
+/* practice blocks */
+.practice-section{margin-bottom:44px}
+.practice-title{font-family:'Cormorant Garamond',serif;font-size:11px;letter-spacing:.4em;text-transform:uppercase;color:var(--accent-dim);margin-bottom:16px;padding-bottom:8px;border-bottom:1px solid var(--border)}
+.practice-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:10px}
+.practice-card{background:var(--accent-faint);border:1px solid var(--border);border-radius:3px;padding:14px 16px}
+.practice-card.breath{background:rgba(210,175,100,0.05);border-color:rgba(210,175,100,0.12)}
+.practice-card-title{font-family:'Cormorant Garamond',serif;font-size:14px;color:rgba(226,217,200,.9);margin-bottom:4px;font-style:italic}
+.practice-card-desc{font-family:'Crimson Pro',serif;font-size:13px;color:var(--text-dim);line-height:1.55}
 
-  .cover-divider {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 20px;
-    margin-bottom: 64px;
-  }
-  .cover-divider::before,
-  .cover-divider::after {
-    content: '';
-    width: 80px;
-    height: 1px;
-    background: linear-gradient(to right, transparent, var(--accent-dim));
-  }
-  .cover-divider::after {
-    background: linear-gradient(to left, transparent, var(--accent-dim));
-  }
-  .cover-ornament {
-    font-size: 18px;
-    color: var(--accent-dim);
-  }
+/* nav */
+.chapter-nav{display:flex;justify-content:space-between;align-items:center;border-top:1px solid var(--border);padding-top:32px;gap:16px;margin-top:8px}
+.nav-btn{background:none;border:1px solid var(--border);border-radius:3px;padding:12px 18px;cursor:pointer;color:var(--text-dim);font-family:'Cormorant Garamond',serif;font-size:11px;letter-spacing:.2em;text-transform:uppercase;display:flex;align-items:center;gap:10px;transition:all .2s;min-width:80px}
+.nav-btn:hover:not(:disabled){background:var(--accent-faint);border-color:var(--accent-dim);color:var(--accent)}
+.nav-btn:disabled{opacity:.2;cursor:default}
+.nav-progress{font-family:'Cormorant Garamond',serif;font-size:11px;letter-spacing:.2em;color:var(--text-faint);white-space:nowrap}
 
-  /* ── Index ── */
-  #index { animation: riseIn 0.8s cubic-bezier(.22,1,.36,1) 0.2s both; }
-
-  .index-label {
-    font-family: 'Cormorant Garamond', serif;
-    font-size: 10px;
-    letter-spacing: 0.4em;
-    text-transform: uppercase;
-    color: var(--text-faint);
-    margin-bottom: 24px;
-  }
-
-  .chapter-btn {
-    display: flex;
-    align-items: flex-start;
-    gap: 22px;
-    width: 100%;
-    text-align: left;
-    background: transparent;
-    border: 1px solid var(--border);
-    border-radius: 3px;
-    padding: 20px 22px;
-    margin-bottom: 5px;
-    cursor: pointer;
-    color: var(--text);
-    font-family: inherit;
-    transition: background 0.25s, border-color 0.25s, transform 0.2s;
-    position: relative;
-    overflow: hidden;
-  }
-  .chapter-btn::before {
-    content: '';
-    position: absolute;
-    left: 0; top: 0; bottom: 0;
-    width: 2px;
-    background: var(--accent);
-    transform: scaleY(0);
-    transform-origin: bottom;
-    transition: transform 0.3s cubic-bezier(.22,1,.36,1);
-  }
-  .chapter-btn:hover {
-    background: var(--accent-faint);
-    border-color: var(--accent-dim);
-    transform: translateX(3px);
-  }
-  .chapter-btn:hover::before { transform: scaleY(1); }
-
-  .chapter-num {
-    font-family: 'Cormorant Garamond', serif;
-    font-size: 10px;
-    letter-spacing: 0.3em;
-    text-transform: uppercase;
-    color: var(--accent-dim);
-    min-width: 56px;
-    padding-top: 4px;
-    flex-shrink: 0;
-  }
-  .chapter-title-idx {
-    font-family: 'Cormorant Garamond', serif;
-    font-size: 17px;
-    font-weight: 400;
-    color: rgba(226,217,200,0.88);
-    line-height: 1.4;
-  }
-
-  .cover-footer {
-    text-align: center;
-    margin-top: 72px;
-    font-family: 'Cormorant Garamond', serif;
-    font-size: 11px;
-    letter-spacing: 0.4em;
-    text-transform: uppercase;
-    color: var(--accent-dim);
-  }
-
-  /* ── Chapter View ── */
-  #chapter-view {
-    padding-top: 52px;
-    display: none;
-  }
-  #chapter-view.active {
-    display: block;
-    animation: riseIn 0.5s cubic-bezier(.22,1,.36,1) both;
-  }
-
-  .back-btn {
-    background: none;
-    border: none;
-    cursor: pointer;
-    color: var(--text-faint);
-    font-family: 'Cormorant Garamond', serif;
-    font-size: 11px;
-    letter-spacing: 0.3em;
-    text-transform: uppercase;
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    margin-bottom: 60px;
-    padding: 0;
-    transition: color 0.2s;
-  }
-  .back-btn:hover { color: var(--accent); }
-  .back-btn svg { transition: transform 0.2s; }
-  .back-btn:hover svg { transform: translateX(-3px); }
-
-  .chapter-eyebrow {
-    font-family: 'Cormorant Garamond', serif;
-    font-size: 10px;
-    letter-spacing: 0.45em;
-    text-transform: uppercase;
-    color: var(--accent);
-    margin-bottom: 14px;
-  }
-
-  .chapter-heading {
-    font-family: 'Cormorant Garamond', serif;
-    font-weight: 300;
-    font-size: clamp(1.6rem, 5vw, 2.4rem);
-    line-height: 1.2;
-    color: #f4ede0;
-    margin-bottom: 52px;
-    letter-spacing: -0.01em;
-  }
-
-  .chapter-body {
-    border-left: 1px solid var(--accent-dim);
-    padding-left: 28px;
-    margin-bottom: 64px;
-  }
-  .chapter-body p {
-    font-size: 17.5px;
-    line-height: 1.9;
-    color: rgba(226,217,200,0.82);
-    margin-bottom: 26px;
-    font-weight: 300;
-  }
-  .chapter-body p:last-child { margin-bottom: 0; }
-
-  /* ── Chapter Nav ── */
-  .chapter-nav {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    border-top: 1px solid var(--border);
-    padding-top: 32px;
-    gap: 16px;
-  }
-
-  .nav-btn {
-    background: none;
-    border: 1px solid var(--border);
-    border-radius: 3px;
-    padding: 12px 18px;
-    cursor: pointer;
-    color: var(--text-dim);
-    font-family: 'Cormorant Garamond', serif;
-    font-size: 11px;
-    letter-spacing: 0.2em;
-    text-transform: uppercase;
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    transition: all 0.2s;
-    min-width: 80px;
-  }
-  .nav-btn:hover:not(:disabled) {
-    background: var(--accent-faint);
-    border-color: var(--accent-dim);
-    color: var(--accent);
-  }
-  .nav-btn:disabled {
-    opacity: 0.2;
-    cursor: default;
-  }
-  .nav-btn.next { margin-left: auto; }
-
-  .nav-progress {
-    font-family: 'Cormorant Garamond', serif;
-    font-size: 11px;
-    letter-spacing: 0.2em;
-    color: var(--text-faint);
-    white-space: nowrap;
-  }
-
-  /* ── Animations ── */
-  @keyframes riseIn {
-    from { opacity: 0; transform: translateY(20px); }
-    to   { opacity: 1; transform: translateY(0); }
-  }
-
-  /* ── Transition overlay ── */
-  #overlay {
-    position: fixed; inset: 0; z-index: 100;
-    background: var(--bg);
-    pointer-events: none;
-    opacity: 0;
-    transition: opacity 0.28s ease;
-  }
-  #overlay.fading { opacity: 1; }
-
-  /* ── Scrollbar ── */
-  ::-webkit-scrollbar { width: 4px; }
-  ::-webkit-scrollbar-track { background: transparent; }
-  ::-webkit-scrollbar-thumb { background: var(--accent-dim); border-radius: 2px; }
+@keyframes riseIn{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+::-webkit-scrollbar{width:4px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:var(--accent-dim);border-radius:2px}
 </style>
 </head>
 <body>
-
 <div id="nebula"></div>
 <div id="starfield"></div>
 <div id="overlay"></div>
 
 <div id="app">
-
-  <!-- COVER & INDEX -->
+  <!-- HOME -->
   <div id="home-view">
     <div id="cover">
-      <div class="cover-tag">Filosofía &middot; Psicología &middot; Física</div>
-      <h1 class="cover-title">
-        Camino de
-        <em>Yoga Cuántico</em>
-      </h1>
+      <div class="cover-tag">Filosofía &middot; Física &middot; Yoga</div>
+      <h1 class="cover-title">Camino de<em>Yoga Cuántico</em></h1>
       <p class="cover-subtitle">Una filosofía del ser en superposición</p>
+      <p class="cover-dim-note">11 Dimensiones · 11 Prácticas · 11 Fórmulas</p>
       <div class="cover-divider"><span class="cover-ornament">✦</span></div>
     </div>
-
     <div id="index">
-      <p class="index-label">Contenidos</p>
-      <div id="chapter-list"></div>
+      <p class="index-section-label">Fundamentos</p>
+      <div id="list-base"></div>
+      <p class="index-section-label">Las Once Dimensiones</p>
+      <div id="list-dim"></div>
+      <p class="index-section-label">Cierre</p>
+      <div id="list-close"></div>
       <div class="cover-footer">Carpe Diem</div>
     </div>
   </div>
 
-  <!-- CHAPTER VIEW -->
+  <!-- CHAPTER -->
   <div id="chapter-view">
     <button class="back-btn" onclick="goHome()">
       <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><polyline points="15 18 9 12 15 6"/></svg>
       Índice
     </button>
     <div class="chapter-eyebrow" id="ch-number"></div>
+    <div class="chapter-dim-name" id="ch-dimname"></div>
     <h2 class="chapter-heading" id="ch-title"></h2>
+    <div id="ch-formula"></div>
     <div class="chapter-body" id="ch-body"></div>
+    <div id="ch-practices"></div>
     <div class="chapter-nav">
-      <button class="nav-btn prev" id="btn-prev" onclick="navChapter(-1)">
+      <button class="nav-btn" id="btn-prev" onclick="navChapter(-1)">
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"/></svg>
         <span id="prev-label"></span>
       </button>
       <span class="nav-progress" id="nav-progress"></span>
-      <button class="nav-btn next" id="btn-next" onclick="navChapter(1)">
+      <button class="nav-btn" id="btn-next" onclick="navChapter(1)">
         <span id="next-label"></span>
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
       </button>
     </div>
   </div>
-
 </div>
 
 <script>
 const CHAPTERS = [
+  // ── FUNDAMENTOS ──
   {
+    type: "base",
     number: "Prólogo",
+    dimName: "",
     title: "El observador que colapsa el mundo",
+    formula: null,
     content: [
       "Todo sistema cuántico existe en superposición hasta que es observado. El acto de observar colapsa la función de onda: de lo potencial emerge lo real.",
       "El ser humano es, en su esencia, un observador. Pero a diferencia del instrumento de medición físico, el observador consciente no solo colapsa la realidad exterior: también se colapsa a sí mismo.",
       "Este libro es una cartografía de ese proceso. No una doctrina. Una herramienta para quien ya sospecha que la realidad es más porosa de lo que la mente ordinaria admite.",
       "El Camino de Yoga Cuántico no prescribe posiciones corporales ni dogmas metafísicos. Es una disciplina de la atención: la práctica sistemática de habitar el instante con precisión creciente.",
       "Carpe Diem no es un hedonismo superficial. Es una ontología: el presente es el único dominio donde el ser colapsa desde posibilidad hacia acto."
-    ]
+    ],
+    asanas: [], pranayama: []
   },
   {
+    type: "base",
     number: "I",
+    dimName: "",
     title: "La teoría M y el yo múltiple",
+    formula: null,
     content: [
       "La teoría M postula once dimensiones y un multiverso de membranas vibrantes. Desde la física, esto no es metáfora: es la arquitectura más plausible del cosmos.",
-      "Para la psicología del yo, esta estructura es iluminadora. El yo no es una sustancia fija sino un patrón vibracional que se actualiza en cada instante. Lo que llamamos \"identidad\" es la coherencia estadística de esos patrones a través del tiempo.",
-      "Jung denominó al yo la función sintética del psiquismo: no es el centro de la conciencia, sino su intento de narrativa continua. Desde el Camino, el yo es una membrana: permeable, vibratoria, en permanente negociación con otras membranas —otras personas, otros posibles yos propios.",
+      "Para la psicología del yo, esta estructura es iluminadora. El yo no es una sustancia fija sino un patrón vibracional que se actualiza en cada instante. Lo que llamamos «identidad» es la coherencia estadística de esos patrones a través del tiempo.",
+      "Jung denominó al yo la función sintética del psiquismo: no es el centro de la conciencia, sino su intento de narrativa continua. Desde el Camino, el yo es una membrana: permeable, vibratoria, en permanente negociación con otras membranas.",
       "La patología psicológica más frecuente es la rigidez de membrana: el yo que se cierra, que deja de vibrar, que confunde su forma actual con su forma definitiva.",
       "La práctica: percibir el yo como proceso, no como cosa. Observar sus oscilaciones sin identificarse compulsivamente con ninguna de sus fases."
-    ]
+    ],
+    asanas: [], pranayama: []
   },
   {
+    type: "base",
     number: "II",
+    dimName: "",
     title: "El presente como colapso de posibilidad",
+    formula: null,
     content: [
       "En mecánica cuántica, el principio de superposición establece que un sistema existe en todos sus estados posibles simultáneamente hasta que la medición fuerza la actualización de uno. El pasado es un colapso ya ocurrido —irreversible. El futuro es superposición pura —probabilidad sin forma.",
       "El presente es el borde: el único punto donde el observador puede incidir.",
-      "La mente ordinaria —lo que Tolle denomina el \"dolor-cuerpo\" y la tradición budista llama samsara— oscila compulsivamente entre la memoria del colapso pasado y la ansiedad ante el colapso futuro. Ninguno de esos dominios es modificable desde la acción presente.",
+      "La mente ordinaria —lo que Tolle denomina el «dolor-cuerpo» y la tradición budista llama samsara— oscila compulsivamente entre la memoria del colapso pasado y la ansiedad ante el colapso futuro. Ninguno de esos dominios es modificable desde la acción presente.",
       "El Camino es una disciplina de retorno al borde. No como negación del pasado o el futuro, sino como reconocimiento de que el único lugar donde la conciencia puede ejercer causalidad es el instante en curso.",
       "Carpe Diem, comprendido así, no es impulsividad. Es precisión ontológica: actuar desde el único punto de contacto real con la realidad."
-    ]
+    ],
+    asanas: [], pranayama: []
   },
   {
+    type: "base",
     number: "III",
+    dimName: "",
     title: "Entrelazamiento y relación",
+    formula: null,
     content: [
       "El entrelazamiento cuántico describe dos partículas que, una vez en contacto, mantienen correlación instantánea independientemente de la distancia. Medir una define el estado de la otra, sin señal que viaje entre ellas.",
       "En psicología vincular, algo análogo ocurre: dos seres que se han encontrado en profundidad no retornan a su independencia original. El campo compartido persiste. No como dependencia patológica, sino como transformación estructural mutua.",
       "La honestidad —valor central de este camino— es la práctica que mantiene limpio ese campo. La deshonestidad introduce interferencia: distorsiona el entrelazamiento, genera ruido donde podría haber resonancia.",
       "La relación auténtica no aspira a fusión —eso es confusión de membranas— ni a distancia protectora —eso es aislamiento de membrana. Aspira a contacto preciso: dos vibraciones que se reconocen sin anularse.",
       "El amor, en este marco, no es un estado emocional sino un modo de atención: la disposición a ver al otro en su singularidad, sin proyectarlo sobre la pantalla del propio sistema de referencia."
-    ]
+    ],
+    asanas: [], pranayama: []
   },
   {
+    type: "base",
     number: "IV",
+    dimName: "",
     title: "El yoga como laboratorio de presencia",
+    formula: null,
     content: [
       "El yoga no es gimnasia. No es estiramiento sofisticado ni estética de bienestar. En su raíz etimológica —yuj, unir— el yoga es la práctica de reunir lo que la mente fragmenta: cuerpo y conciencia, instante y atención, movimiento y quietud.",
       "En términos cuánticos, el yoga es un colapso deliberado: la práctica de forzar la superposición dispersa del pensamiento hacia un punto de actualización presente. Cada postura —asana— es una pregunta que el cuerpo le hace a la conciencia: ¿estás aquí?",
-      "La respiración es el operador fundamental. El pranayama no regula el aire; regula la atención. Al anclar la conciencia en el ciclo respiratorio, se interrumpe el bucle automático del pensamiento compulsivo. El sistema nervioso autónomo —que opera por debajo del umbral del yo— es reclutado hacia la presencia.",
+      "La respiración es el operador fundamental. El pranayama no regula el aire; regula la atención. Al anclar la conciencia en el ciclo respiratorio, se interrumpe el bucle automático del pensamiento compulsivo.",
       "La dificultad de una postura no reside en la flexibilidad muscular. Reside en la capacidad de permanecer como observador mientras el cuerpo reporta incomodidad. Esta es la práctica central del Camino: no eliminar la tensión, sino aprender a habitarla sin colapsar en la reacción.",
-      "El yoga cuántico no tiene estilo fijo. Puede ser vinyasa, kundalini, yin, pranayama puro o meditación sentada. Lo que define la práctica no es la forma sino la calidad de la atención que la atraviesa. Una postura hecha con la mente en el pasado es gimnasia. La misma postura habitada desde el borde del instante es yoga."
-    ]
+      "Lo que define la práctica no es la forma sino la calidad de la atención que la atraviesa. Una postura hecha con la mente en el pasado es gimnasia. La misma postura habitada desde el borde del instante es yoga."
+    ],
+    asanas: [], pranayama: []
   },
   {
+    type: "base",
     number: "V",
+    dimName: "",
     title: "La aceptación como acto cuántico",
+    formula: null,
     content: [
       "Aceptar no es resignarse. La resignación es una rendición del querer —el deseo que abdica. La aceptación es un reconocimiento del colapso ya ocurrido: este estado es el estado actual del sistema. Negarle existencia no lo modifica; solo divide la energía disponible para la acción.",
-      "El duelo —de una relación, de una identidad, de un sueño— es el proceso de actualizar el mapa cognitivo-emocional a la nueva topología de la realidad. Un proceso que no tiene atajos, pero que puede tener acompañamiento: la filosofía, la psicología, la presencia de textos como El Poder del Ahora, que señalan que el sufrimiento surge no del evento sino de la resistencia al evento.",
+      "El duelo —de una relación, de una identidad, de un sueño— es el proceso de actualizar el mapa cognitivo-emocional a la nueva topología de la realidad. Un proceso que no tiene atajos, pero que puede tener acompañamiento.",
       "En términos cuánticos: el colapso ya ocurrió. La función de onda de ese estado posible se contrajo. Resistir el colapso es intentar reabrir una superposición que ya no existe.",
       "La aceptación libera la energía que estaba detenida en la resistencia. Esa energía disponible es la materia prima del siguiente colapso —del próximo instante elegido con presencia."
+    ],
+    asanas: [], pranayama: []
+  },
+
+  // ── LAS ONCE DIMENSIONES ──
+  {
+    type: "dim",
+    number: "Dimensión I",
+    dimName: "Ādhāra — La Dimensión del Sustrato",
+    title: "Enraizamiento: la postura como ancla gravitacional",
+    formula: {
+      expr: "S₁ = ∫₀^∞ ρ(x) · g(x) dx",
+      desc: "La acción del sustrato S₁ es la integral de densidad presencial ρ sobre el campo gravitacional g — todo ser necesita tierra antes de cielo."
+    },
+    content: [
+      "La primera dimensión de la teoría M es la más elemental: la extensión espacial que permite que algo ocupe un lugar. Sin Ādhāra —sustrato en sánscrito— ninguna otra dimensión tiene donde desplegarse. Es el suelo de toda existencia posible.",
+      "En el cuerpo, Ādhāra corresponde a los pies, las piernas, el perineo, la base de la columna. Es la zona donde el sistema nervioso registra si estamos seguros o amenazados. La mayoría de los seres humanos modernos habita esta dimensión con ansiedad crónica: el cuerpo reporta peligro aunque la mente no encuentre su fuente.",
+      "La práctica de Ādhāra es simple y radical: volver al contacto con el suelo. Sentir el peso real del cuerpo sobre la tierra. Dejar que la gravedad —esa fuerza que curva el espacio-tiempo según Einstein— haga su trabajo sin resistencia.",
+      "Desde la física cuántica, el vacío cuántico nunca está vacío: hierve con fluctuaciones virtuales de energía. El suelo no es ausencia; es el campo más denso de potencial no manifestado. Pisar conscientemente es participar de esa densidad."
+    ],
+    asanas: [
+      { name: "Tadasana", desc: "Postura de la montaña. De pie, pies paralelos, peso distribuido en las cuatro esquinas de cada pie. La columna se eleva sin tensión." },
+      { name: "Virabhadrasana I", desc: "Guerrero I. Enraizamiento dinámico: la pierna posterior ancla mientras la anterior avanza. Presencia que no huye." },
+      { name: "Malasana", desc: "Guirnalda. Cuclillas profundas con palmas unidas. Activa la raíz, abre las caderas, devuelve el cuerpo a su geometría ancestral." },
+      { name: "Balasana", desc: "Postura del niño. Frente al suelo, rodillas abiertas, brazos extendidos. Rendición completa a la gravedad de Ādhāra." }
+    ],
+    pranayama: [
+      { name: "Respiración Tierra (4-4-4)", desc: "Inhala 4 tiempos, retén 4, exhala 4. Ciclo cuadrado que estabiliza el sistema nervioso autónomo y ancla la atención en el cuerpo físico." },
+      { name: "Bhramari (Abeja)", desc: "Exhala con el sonido mmm vibrado en el cráneo. La vibración desciende por la columna hasta el suelo pélvico, activando el nervio vago." }
     ]
   },
   {
+    type: "dim",
+    number: "Dimensión II",
+    dimName: "Pravāha — La Dimensión del Flujo",
+    title: "Movimiento: la conciencia que ondula",
+    formula: {
+      expr: "Ψ(x,t) = A · e^(i(kx − ωt))",
+      desc: "La función de onda Ψ describe una conciencia en movimiento: amplitud A, vector de onda k, frecuencia angular ω. Fluir es ser real."
+    },
+    content: [
+      "La segunda dimensión introduce el movimiento: la posibilidad de que algo se desplace a lo largo de la primera. Pravāha —flujo en sánscrito— es la dimensión donde la vida se distingue de la piedra. Todo sistema vivo fluye; todo sistema muerto se detiene.",
+      "La mente que resiste el flujo produce sufrimiento. La tradición budista lo sabe desde hace veintiséis siglos: el apego —a personas, ideas, estados— es el intento de detener lo que por naturaleza se mueve. La teoría cuántica lo confirma desde otro ángulo: la función de onda existe solo en movimiento. Un sistema sin evolución temporal no es un sistema: es una abstracción.",
+      "En el cuerpo, Pravāha habita en las caderas, el sacro y la región lumbar. Es la zona donde el movimiento se origina y se bloquea. La tensión crónica en la cadera es, en muchos casos, el registro físico de emociones que no pudieron fluir: tristeza detenida, ira no expresada, duelo interrumpido.",
+      "La práctica de esta dimensión no busca velocidad sino continuidad. El movimiento consciente —lento, atento, sin destino ansioso— es más cuántico que el movimiento eficiente. Ondular es más cercano a la naturaleza de la realidad que avanzar en línea recta."
+    ],
+    asanas: [
+      { name: "Surya Namaskar (lento)", desc: "Saludo al sol ejecutado en cámara lenta, respiración guiando cada transición. El flujo entre posturas importa más que las posturas mismas." },
+      { name: "Anjaneyasana", desc: "Media luna baja. Apertura de cadera frontal, columna alargada. Libera el psoas —músculo del miedo— permitiendo que el flujo emocional se reanude." },
+      { name: "Baddha Konasana", desc: "Postura del zapatero. Talones unidos, rodillas abiertas. Permite que la energía pélvica se redistribuya sin ser dirigida ni forzada." },
+      { name: "Parighasana", desc: "Postura del cerrojo. Lateral profundo arrodillado. Abre el espacio intercostal y la corriente lateral del cuerpo energético." }
+    ],
+    pranayama: [
+      { name: "Ujjayi (Ocean Breath)", desc: "Constricción suave de la glotis produce sonido oceánico. Crea un flujo auditivo interno que ancla la atención en la corriente de la respiración." },
+      { name: "Nadi Shodhana", desc: "Respiración alterna por fosas nasales. Equilibra los canales ida y pingala —flujos solar y lunar— restaurando la corriente central sushumna." }
+    ]
+  },
+  {
+    type: "dim",
+    number: "Dimensión III",
+    dimName: "Vyoman — La Dimensión del Espacio",
+    title: "Apertura: el cuerpo como espacio sagrado",
+    formula: {
+      expr: "V = (4/3)π r³ · e^(−λt)",
+      desc: "El volumen interior V del ser expande cúbicamente con el radio de apertura r y decae con la constricción λ acumulada en el tiempo t."
+    },
+    content: [
+      "Vyoman significa espacio, éter, cielo abierto. Es la tercera dimensión —profundidad— y con ella emerge el volumen: la posibilidad de que algo tenga interior. Sin Vyoman, el universo sería una superficie sin dentro.",
+      "El cuerpo humano es, en gran medida, espacio. Las cavidades —torácica, abdominal, craneal— son los dominios donde la vida se despliega. Pero la mente ansiosa colapsa ese espacio: contrae el diafragma, eleva los hombros, estrecha la garganta. El estado de alerta crónico transforma el interior en una cámara de compresión.",
+      "Desde la teoría cuántica de campos, el espacio vacío no es nada: es el campo de Higgs, la energía de punto cero, el medio donde las partículas adquieren masa y existencia. El espacio interior del practicante es análogamente generativo: la conciencia que sabe habitar su propio vacío puede sostener más realidad.",
+      "La práctica de Vyoman es la práctica de la apertura sin exposición: aprender a expandir el espacio interno sin perder la membrana que define el yo. Abrirse no es disolverse. El espacio interior bien habitado es el territorio desde el cual la acción surge sin urgencia."
+    ],
+    asanas: [
+      { name: "Ustrasana", desc: "Camello. Apertura frontal máxima del torso. El corazón se eleva, la garganta se abre, el diafragma recupera su rango completo de movimiento." },
+      { name: "Matsyasana", desc: "Pez. Expansión del espacio torácico desde el suelo. Contraparte de Sarvangasana, abre la dimensión interior del pecho y la garganta." },
+      { name: "Viparita Karani", desc: "Piernas en la pared. Inversión suave que redistribuye fluidos y crea espacio en la región lumbar. El sistema nervioso se recalibra." },
+      { name: "Savasana con expansión", desc: "Cadáver consciente. La atención explora el espacio interno de cada cavidad corporal sin intervenirlo. Observar el volumen propio." }
+    ],
+    pranayama: [
+      { name: "Respiración 3D", desc: "Inhala expandiendo primero el abdomen, luego las costillas laterales, luego el pecho superior. Llena el volumen completo de Vyoman." },
+      { name: "Vishama Vritti (7-0-11-0)", desc: "Inhala 7, exhala 11, sin retención. La exhalación extendida activa el parasimpático y amplía el espacio entre pensamientos." }
+    ]
+  },
+  {
+    type: "dim",
+    number: "Dimensión IV",
+    dimName: "Kāla — La Dimensión del Tiempo",
+    title: "Impermanencia: habitar el instante sin poseerlo",
+    formula: {
+      expr: "Δt · ΔE ≥ ℏ/2",
+      desc: "La relación de incertidumbre tiempo-energía: no es posible conocer con precisión simultánea la duración y la energía de un estado. El instante perfecto no existe; existe el instante presente."
+    },
+    content: [
+      "Kāla es tiempo, pero también es muerte en sánscrito. La cuarta dimensión —el tiempo— es inseparable de la impermanencia. Todo lo que existe en las tres dimensiones espaciales está condenado a cambiar. Esta es la verdad más resistida por la mente humana y la más liberadora cuando se integra en el cuerpo.",
+      "La teoría cuántica introduce una forma extraña de tiempo: no es una flecha unidireccional sino un parámetro que puede, en ciertos contextos, invertirse o bifurcarse. El presente no es un punto que viaja hacia el futuro; es el único dominio donde la función de onda colapsa. Kāla, bien comprendido, no es una amenaza: es la condición de posibilidad de toda experiencia.",
+      "En el cuerpo, la resistencia al tiempo se registra como tensión facial, contracción de la mandíbula, elevación crónica de los hombros. La práctica de Kāla desacelera deliberadamente: no porque el tiempo se detenga, sino porque la conciencia aprende a percibir su flujo en lugar de huir de él.",
+      "Eckhart Tolle señala que el dolor psicológico requiere tiempo: requiere pasado para el arrepentimiento y futuro para la ansiedad. El presente puro no puede sostener sufrimiento psicológico sostenido. Kāla es la práctica de ese descubrimiento."
+    ],
+    asanas: [
+      { name: "Yin Yoga (3-5 min por postura)", desc: "Posturas sostenidas en el tiempo. El tejido conectivo —fascia— solo se remodelado con duración, no con fuerza. Kāla en acción tisular." },
+      { name: "Janu Sirsasana", desc: "Flexión lateral hacia rodilla. Mantenida 5 minutos, permite que el tiempo disuelva la resistencia que la fuerza no puede vencer." },
+      { name: "Supta Baddha Konasana", desc: "Reclinado con plantas unidas. Postura de restauración profunda. El cuerpo aprende que detenerse no es peligroso." },
+      { name: "Siddhasana (meditación)", desc: "Postura perfecta. Estabilidad sin esfuerzo. La columna vertical permite que la conciencia permanezca sin ser arrastrada por el flujo de Kāla." }
+    ],
+    pranayama: [
+      { name: "Sama Vritti extendido (6-6-6-6)", desc: "Cuatro fases iguales de 6 tiempos. Igualar inhalación, retención llena, exhalación y retención vacía diluye la preferencia por un momento sobre otro." },
+      { name: "Respiración del Silencio", desc: "Exhala completamente y permanece en el vacío sin inhalar hasta que el cuerpo pida. Experimentar el espacio entre tiempos." }
+    ]
+  },
+  {
+    type: "dim",
+    number: "Dimensión V",
+    dimName: "Māyā — La Dimensión de la Posibilidad",
+    title: "Superposición: ser todo antes de ser algo",
+    formula: {
+      expr: "|Ψ⟩ = α|0⟩ + β|1⟩,  |α|² + |β|² = 1",
+      desc: "El estado cuántico Ψ es superposición de todos los estados posibles. La normalización garantiza que la suma de probabilidades es 1: toda posibilidad existe, pero solo una colapsa."
+    },
+    content: [
+      "Māyā no significa ilusión en su sentido moderno —engaño o falsedad— sino poder creativo: la capacidad del campo primordial de desplegarse en infinitas formas sin agotar su fuente. La quinta dimensión de la teoría M es precisamente esto: la dimensión que alberga los mundos posibles no actualizados, las líneas de universo que no fueron tomadas.",
+      "El principio de superposición es el corazón matemático de la mecánica cuántica: antes de la medición, un sistema ocupa todos sus estados posibles simultáneamente. El electrón no está aquí o allá; está en ambos lugares con amplitudes de probabilidad. La observación colapsa esa riqueza en una sola actualización.",
+      "La mente creativa —el artista, el filósofo, el yogui avanzado— aprende a habitar Māyā sin ansiedad: a sostener la superposición interior sin precipitar el colapso por miedo a la indeterminación. Esta capacidad —tolerar la ambigüedad fértil— es una de las más escasas y más valiosas del psiquismo humano.",
+      "La práctica de Māyā es la práctica de la no-preferencia anticipada: ejecutar la postura sin saber de antemano cómo terminará, entrar en la meditación sin esperar un estado específico. Dejar que el cuerpo-mente sea más rico que cualquier previsión del yo."
+    ],
+    asanas: [
+      { name: "Vinyasa libre (improvización)", desc: "Sin secuencia predeterminada. El cuerpo elige el siguiente movimiento en tiempo real. La mente practica no imponer." },
+      { name: "Natarajasana", desc: "Señor de la danza. Equilibrio dinámico que exige rendirse al movimiento. Shiva danzante: creación y destrucción en superposición." },
+      { name: "Hanumanasana", desc: "El gran salto de Hanuman. Apertura total en splits. El cuerpo explora su máxima extensión posible sin saber dónde está su límite actual." },
+      { name: "Handstand (Adho Mukha Vrksasana)", desc: "El mundo invertido. Desafía el mapa cognitivo de arriba/abajo, posible/imposible. Māyā corporizada." }
+    ],
+    pranayama: [
+      { name: "Kapalabhati (Cráneo brillante)", desc: "Exhalaciones nasales fuertes y rítmicas, inhalaciones pasivas. Limpia los canales, genera calor prānico y activa el estado de alerta creativa." },
+      { name: "Respiración Paradójica", desc: "Invierte el patrón: exhala al expandir el abdomen, inhala al contraerlo. Desestabiliza el automatismo y forza presencia total." }
+    ]
+  },
+  {
+    type: "dim",
+    number: "Dimensión VI",
+    dimName: "Setu — La Dimensión del Puente",
+    title: "Integración: unir los opuestos sin borrarlos",
+    formula: {
+      expr: "E_total = E_↑ ⊗ E_↓ / (E_↑ + E_↓)",
+      desc: "La energía del puente es el producto tensorial de los opuestos normalizado por su suma: la integración no promedia —transforma."
+    },
+    content: [
+      "Setu significa puente. La sexta dimensión es el dominio donde los opuestos se tocan sin fusionarse: donde la luz y la sombra junguiana comparten borde, donde el cuerpo y la mente comparten superficie. Sin Setu, la existencia se fragmenta en polos que no pueden comunicarse.",
+      "La psicología analítica de Jung describe la individuación como el proceso de integrar los opuestos psíquicos: el yo consciente y la sombra, el animus y el anima, la persona y el sí-mismo. Este proceso no busca la eliminación de los opuestos sino su reconciliación activa —mantenerlos en tensión productiva.",
+      "En el cuerpo, los opuestos más básicos son tensión y relajación, esfuerzo y rendición, extensión y contracción. La mayoría de los practicantes oscila entre ellos. La práctica de Setu busca el estado donde ambos coexisten simultáneamente: el músculo que trabaja y descansa al mismo tiempo, la mente alerta y tranquila.",
+      "La dualidad no es el problema; la rigidez ante la dualidad lo es. Un puente no niega los dos lados que conecta: los necesita ambos para existir. Setu es la práctica de honrar la contradicción como arquitectura de lo real."
+    ],
+    asanas: [
+      { name: "Setu Bandha Sarvangasana", desc: "Puente. El cuerpo es literalmente un arco entre tierra y cielo. Fuerza y apertura simultáneas: la columna activa mientras el pecho se expande." },
+      { name: "Trikonasana", desc: "Triángulo. Une suelo y cielo con geometría precisa. Cada línea del cuerpo es simultáneamente activa y en reposo." },
+      { name: "Ardha Matsyendrasana", desc: "Torsión sentada. Integra el frente y la espalda del cuerpo, la izquierda y la derecha del sistema nervioso. Jung corporizado." },
+      { name: "Chakravakasana (Cat-Cow)", desc: "Columna que ondula entre flexión y extensión. El puente que une los opuestos más básicos del movimiento vertebral." }
+    ],
+    pranayama: [
+      { name: "Surya-Chandra (Solar-Lunar)", desc: "Inhala 8 tiempos por fosa derecha (solar), exhala 8 por fosa izquierda (lunar). Alterna el ciclo. Construye el puente entre calor y frescura." },
+      { name: "Kumbhaka doble (retención llena y vacía)", desc: "Inhala, retén 4, exhala, retén 4. Las dos retenciones son los dos extremos del puente; el practicante aprende a habitar ambos sin preferencia." }
+    ]
+  },
+  {
+    type: "dim",
+    number: "Dimensión VII",
+    dimName: "Antariksha — La Dimensión del Umbral",
+    title: "Transición: el momento entre mundos",
+    formula: {
+      expr: "T(a→b) = |⟨b|Û|a⟩|²",
+      desc: "La probabilidad de transición entre estados a y b es el módulo cuadrado de la amplitud mediada por el operador unitario Û. Todo umbral es un operador que transforma."
+    },
+    content: [
+      "Antariksha es el espacio intermedio, el entre-mundos: ni tierra ni cielo, ni aquí ni allá. En la cosmología védica es el espacio atmosférico, el dominio de los fenómenos climáticos —tormenta, relámpago, niebla— que ocurren en la frontera entre dimensiones.",
+      "La teoría cuántica describe los umbrales con precisión matemática: los operadores unitarios transforman un estado en otro sin pérdida de información. El umbral no es vacío; es el agente de transformación. Cruzar un umbral cuántico no es pasar de A a B: es ser transformado por la transición misma.",
+      "En la vida psicológica, los umbrales son los momentos más ricos y más temidos: el fin de una relación, el inicio de un proyecto, el instante entre el sueño y la vigilia, el período entre identidades. La mayoría de los seres humanos atraviesa los umbrales lo más rápido posible, ansiosa por llegar al otro lado.",
+      "La práctica de Antariksha es la práctica de la pausa liminal: aprender a habitar el entre-estados con curiosidad en lugar de urgencia. El practicante que puede permanecer en el umbral sin precipitarse desarrolla una forma de sabiduría que no puede adquirirse de ninguna otra manera."
+    ],
+    asanas: [
+      { name: "Transiciones lentas entre asanas", desc: "La instrucción central: no llegar a la postura, sino habitar el movimiento hacia ella. El umbral es la práctica, no el destino." },
+      { name: "Vrksasana (Árbol)", desc: "Equilibrio en un pie. El cuerpo habita perpetuamente el umbral entre caer y permanecer. Antariksha en cada milisegundo." },
+      { name: "Garudasana", desc: "Águila. Extremidades entrelazadas, un punto de equilibrio precario. El cuerpo aprende que la complejidad del umbral es sostenible." },
+      { name: "Pincha Mayurasana", desc: "Pavo real emplumado: antebrazo balance. El umbral entre el suelo y el cielo sostenido por antebrazos. Requiere soltar el miedo a caer." }
+    ],
+    pranayama: [
+      { name: "Viloma (contra la corriente)", desc: "Inhala en tres pausas (deteniéndose en el camino), exhala continua. Habita los umbrales dentro de la inhalación misma." },
+      { name: "Respiración del Umbral", desc: "Al final de cada exhalación completa, permanece en el vacío durante 8-12 tiempos antes de inhalar. Vive en Antariksha." }
+    ]
+  },
+  {
+    type: "dim",
+    number: "Dimensión VIII",
+    dimName: "Śūnya — La Dimensión del Vacío Fértil",
+    title: "Vacuidad: el potencial que precede a toda forma",
+    formula: {
+      expr: "E₀ = ½ℏω · lim(n→∞) Σ(n + ½)",
+      desc: "La energía de punto cero E₀ es la energía mínima de un oscilador cuántico: nunca cero, siempre presente. El vacío no es ausencia sino el piso de toda existencia."
+    },
+    content: [
+      "Śūnya significa vacío, pero no la nada del nihilismo occidental: es el vacío fértil, el espacio desde el cual toda forma emerge. En el budismo Madhyamaka es śūnyatā —vacuidad— la naturaleza última de todos los fenómenos: ninguna cosa tiene existencia inherente; todo existe en dependencia, en relación, en proceso.",
+      "La física cuántica confirma esto con rigor matemático: el vacío cuántico hierve con partículas virtuales que emergen y se aniquilan constantemente. La energía de punto cero es no-nula incluso en el estado de menor energía posible. El vacío no es la ausencia de realidad; es su sustrato más denso.",
+      "Para el practicante, Śūnya es la dimensión más difícil y más liberadora. La mente que ha construido su identidad sobre contenidos —logros, roles, relaciones— experimenta el vacío como amenaza. La mente que ha aprendido a habitar Śūnya lo experimenta como hogar: el lugar desde el cual cualquier forma puede surgir sin apego a ninguna.",
+      "La meditación profunda no busca un estado especial de experiencia: busca el reconocimiento del fondo śūnya sobre el cual toda experiencia ocurre. El practicante no se convierte en nada; descubre que nunca fue solo una cosa."
+    ],
+    asanas: [
+      { name: "Savasana profunda (20+ min)", desc: "Cadáver total. La postura más difícil para la mente occidental: no hacer nada. El cuerpo practica śūnya corporizado." },
+      { name: "Yoga Nidra", desc: "Sueño yóguico despierto. Estado entre vigilia y sueño donde el yo conceptual se disuelve y emerge el observador sin contenido." },
+      { name: "Sukhasana sin objeto de meditación", desc: "Sentado sin instrucción: sin contar respiraciones, sin mantras, sin visualizaciones. Simplemente ser. Śūnya puro." },
+      { name: "Shavasana en espacio abierto (si posible)", desc: "Practicar el cadáver bajo el cielo nocturno. La inmensidad exterior activa el reconocimiento de la inmensidad interior." }
+    ],
+    pranayama: [
+      { name: "Kevala Kumbhaka", desc: "Retención espontánea: no forzada, surge naturalmente en meditación profunda cuando la necesidad de respirar se suspende. El vacío respira al practicante." },
+      { name: "Mahat Yoga Pranayama", desc: "La gran respiración cósmica: inhala imaginando que absorbes el universo entero, exhala imaginando que te disuelves en él. Śūnya como práctica de escala." }
+    ]
+  },
+  {
+    type: "dim",
+    number: "Dimensión IX",
+    dimName: "Spanda — La Dimensión de la Vibración Primordial",
+    title: "Resonancia: sintonizar la frecuencia del ser",
+    formula: {
+      expr: "f_res = (1/2π)√(k/m) · e^(iφ)",
+      desc: "La frecuencia de resonancia f_res de un sistema depende de su rigidez k y su masa m. La fase φ determina en qué punto del ciclo el ser se sintoniza con el campo."
+    },
+    content: [
+      "Spanda es la pulsación primordial del universo en la filosofía del Cachemira Shaivismo: no una vibración mecánica sino la oscilación más sutil entre ser y no-ser que constituye la textura de la realidad. La teoría de cuerdas —núcleo matemático de la teoría M— propone que las partículas fundamentales son cuerdas vibrantes en múltiples dimensiones. Spanda es precisamente eso: la dimensión donde la vibración se origina.",
+      "Cada cuerpo humano vibra a múltiples frecuencias simultáneas: el latido cardíaco, las ondas cerebrales, los ritmos hormonales, las frecuencias del sistema nervioso autónomo. La salud es coherencia entre estas frecuencias —resonancia interna. La enfermedad es, en parte, pérdida de esa coherencia: frecuencias que se interfieren destructivamente en lugar de amplificarse.",
+      "La práctica de Spanda trabaja con el sonido y la vibración como herramientas directas de resintonización. El mantra no es magia: es física aplicada al sistema nervioso. Las frecuencias de ciertos sonidos —especialmente los vocálicos extendidos y las consonantes nasales— producen resonancia en las cavidades corporales que regula el sistema nervioso autónomo.",
+      "El practicante de Spanda aprende a escuchar antes de actuar: a detectar la frecuencia del momento presente antes de imponer la frecuencia del ego. La acción que surge de esa escucha tiene una cualidad diferente —no es forzada, no genera residuo, no agota. Vibra en coherencia con el campo."
+    ],
+    asanas: [
+      { name: "Asanas con mantra interno", desc: "Cada postura acompañada de So-Ham (soy Eso) sincronizado con la respiración. El cuerpo vibra en dos frecuencias simultáneas: física y sónica." },
+      { name: "Nada Yoga (posturas con vocalización)", desc: "Mantener posturas de pie como Virabhadrasana mientras se vocaliza OM sostenido. La vibración informa y transforma la postura desde dentro." },
+      { name: "Chakra asanas con bija mantras", desc: "Secuencia ascendente: Malasana-LAM, Baddha Konasana-VAM, Navasana-RAM, Ustrasana-YAM, Matsyasana-HAM, Sirsasana-OM." },
+      { name: "Trataka (mirada fija)", desc: "No es asana física sino de atención: fijar la mirada en una llama o punto. La vibración visual sincroniza ondas cerebrales hacia estados theta." }
+    ],
+    pranayama: [
+      { name: "OM Pranayama (3-1-7-0)", desc: "Inhala 3, retén 1, exhala en OM sostenido 7 tiempos. La vibración de la exhalación activa el nervio vago y la resonancia de Spanda." },
+      { name: "Bhramari con mudra Shanmukhi", desc: "Zumbido de abeja con oídos, ojos y nariz cerrados. El practicante escucha solo su propia vibración interna. Spanda sin interferencia exterior." }
+    ]
+  },
+  {
+    type: "dim",
+    number: "Dimensión X",
+    dimName: "Ākāsha — La Dimensión de la Conciencia Expandida",
+    title: "Infinitud: cuando el observador reconoce su campo",
+    formula: {
+      expr: "Ĉ = lim(r→∞) ∮_S ρ_c · dA",
+      desc: "La conciencia Ĉ es la integral de superficie de la densidad de presencia ρ_c cuando el radio de observación tiende a infinito: la conciencia sin límite es el campo mismo."
+    },
+    content: [
+      "Ākāsha es el éter, el espacio no-local, la dimensión que no ocupa lugar porque lo contiene todo. En la cosmología védica es el quinto elemento —más sutil que el aire, el fuego, el agua o la tierra— y el medio en que los otros cuatro existen. En la teoría M, las dimensiones superiores a las cuatro espacio-temporales son espacios de este tipo: no perceptibles directamente, pero presentes como estructura de lo real.",
+      "La física cuántica introduce la no-localidad como propiedad fundamental de la realidad. Dos partículas entrelazadas responden instantáneamente a la medición de la otra independientemente de la distancia. Esto no viola la relatividad especial —ninguna señal viaja— pero demuestra que la separación espacial no es la última palabra sobre la conexión. Ākāsha es el espacio donde la no-localidad ocurre.",
+      "Para el practicante avanzado, Ākāsha es el reconocimiento de que el observador no está separado del campo que observa. La conciencia que se examina a sí misma descubre, eventualmente, que no hay una entidad que observe y un objeto observado: hay observación pura, campo que se conoce a sí mismo.",
+      "Esta comprensión no es solipsismo: el mundo fenoménico es real, el cuerpo es real, las relaciones son reales. Pero la ilusión de separación radical —yo aquí, universo allá— se disuelve. El practicante de Ākāsha no se convierte en el universo; reconoce que siempre fue el universo conociéndose a sí mismo en forma particular."
+    ],
+    asanas: [
+      { name: "Sirsasana (Parada de cabeza)", desc: "Inversión completa. El mundo se percibe desde su opuesto. La conciencia que puede invertir su perspectiva espacial entrena la perspectiva expandida de Ākāsha." },
+      { name: "Sarvangasana (Vela)", desc: "Todos los miembros activos, columna vertical invertida. La práctica de la totalidad: todo el cuerpo como un sistema integrado apuntando hacia el infinito." },
+      { name: "Meditación de campo abierto", desc: "Sentado, expandir la conciencia desde el cuerpo hacia la habitación, la ciudad, el planeta, el sistema solar, la galaxia. Sin apresurarse. Sin forzar." },
+      { name: "Anantasana (Serpiente infinita)", desc: "Postura lateral sobre el costado, extremidades extendidas en línea. El nombre significa «infinito». El cuerpo como vector en el espacio de Ākāsha." }
+    ],
+    pranayama: [
+      { name: "Respiración cósmica (sin conteo)", desc: "Respiración natural observada desde la perspectiva de Ākāsha: no yo que respira, sino respiración que ocurre en el campo. La distinción es fundamental." },
+      { name: "Sheetali (Refrigerante)", desc: "Inhala por la lengua enrollada como pajita. La frescura activa la percepción expandida, reduce el calor del ego y abre el espacio entre pensamientos." }
+    ]
+  },
+  {
+    type: "dim",
+    number: "Dimensión XI",
+    dimName: "Parā — La Dimensión del Origen",
+    title: "El Uno: la membrana que contiene todas las membranas",
+    formula: {
+      expr: "S_M = (1/2κ²) ∫d¹¹x √|g| (R − 2Λ) + S_matter",
+      desc: "La acción de la teoría M S_M integra sobre las 11 dimensiones la curvatura R y la constante cosmológica Λ. Todo el universo en una sola ecuación: la membrana que contiene todas las membranas."
+    },
+    content: [
+      "Parā significa supremo, primordial, el origen antes del origen. En el Cachemira Shaivismo es el nivel más alto de la conciencia —Parā Vāk, el lenguaje antes del lenguaje, el pensamiento antes del pensamiento. En la teoría M, la undécima dimensión es aquella desde la cual las otras diez adquieren coherencia: es el espacio donde las diferentes teorías de cuerdas se unifican en una sola descripción.",
+      "Llegar a la undécima dimensión del Camino no es llegar a ningún lugar. Es el reconocimiento de que el camino recorrido —desde Ādhāra hasta Ākāsha— no llevó a un destino sino que desplegó una comprensión que siempre estuvo presente. Como en la analogía platónica de la caverna invertida: no es que la luz estuviera oculta; es que el observador miraba en otra dirección.",
+      "Parā es la práctica de la no-práctica: el estado en que el esfuerzo yóguico ya no es necesario porque la presencia se ha vuelto el modo natural del ser. No es pasividad —el practicante de Parā actúa con precisión y compromiso en el mundo— sino que actúa desde un fondo de quietud que ninguna circunstancia puede disipar.",
+      "La fórmula de la acción de la teoría M es la expresión matemática más comprensiva que la física ha producido: integra toda la geometría del universo en un solo principio variacional. Parā es el equivalente contemplativo de esa fórmula: la comprensión que integra todas las prácticas anteriores en una sola cualidad de presencia. Desde aquí, Carpe Diem no es un esfuerzo. Es lo que queda cuando el esfuerzo ya no hace falta."
+    ],
+    asanas: [
+      { name: "La secuencia completa de las once dimensiones", desc: "Una práctica que atraviesa una asana de cada dimensión en orden ascendente. El cuerpo recapitula el camino completo de Ādhāra a Parā." },
+      { name: "Meditación sin objeto (Rigpa)", desc: "No hay postura específica. El practicante puede estar sentado, de pie, caminando. Parā no depende de la forma. La conciencia descansa en sí misma." },
+      { name: "Shavasana final — la gran rendición", desc: "El cuerpo completamente entregado al suelo. Todo el viaje de once dimensiones culmina en la postura más simple: estar horizontal, sin hacer nada, siendo todo." },
+      { name: "Cualquier postura ordinaria realizada con presencia total", desc: "Lavar los platos, caminar, sentarse a una mesa. Parā transforma toda acción en práctica. El asana final es la vida misma." }
+    ],
+    pranayama: [
+      { name: "Respiración natural observada sin intervención", desc: "No hay técnica en Parā. El practicante observa la respiración tal como ocurre, sin modificarla. La paradoja: este es el pranayama más avanzado y el más simple." },
+      { name: "Turiya (el cuarto estado)", desc: "No es una técnica sino un reconocimiento: el estado de conciencia que subyace a la vigilia, el sueño y el sueño profundo. Se reporta como el sustrato inmóvil de toda respiración." }
+    ]
+  },
+
+  // ── CIERRE ──
+  {
+    type: "close",
     number: "Epílogo",
+    dimName: "",
     title: "El camino no termina: colapsa",
+    formula: null,
     content: [
       "Este libro no concluye porque el Camino no tiene destino fijo. Tiene dirección: mayor presencia, mayor honestidad, mayor capacidad de contacto con lo real.",
-      "Cada práctica —corporal, filosófica, relacional— es un laboratorio del mismo principio: el observador que se vuelve más preciso colapsa realidades de mayor coherencia.",
-      "La teoría M nos dice que existen dimensiones que no percibimos. La psicología nos dice que existen estratos del psiquismo que no habitamos conscientemente. El yoga cuántico no pretende acceder a todos ellos. Pretende ampliar el rango: que el ser que lee estas páginas pueda habitar con mayor plenitud el espectro que ya le pertenece.",
+      "Cada una de las once dimensiones es un laboratorio del mismo principio: el observador que se vuelve más preciso colapsa realidades de mayor coherencia. Ādhāra le enseñó al cuerpo dónde está. Parā le recordó que siempre supo.",
+      "La teoría M nos dice que existen dimensiones que no percibimos con los sentidos ordinarios. El Camino no pretende acceder a todas ellas. Pretende ampliar el rango: que el ser que ha recorrido estas páginas pueda habitar con mayor plenitud el espectro que ya le pertenece.",
       "Carpe Diem.",
       "No como mandato. Como descripción de lo único que, en rigor, existe: este instante, esta conciencia, esta posibilidad de colapsar algo verdadero."
-    ]
+    ],
+    asanas: [], pranayama: []
   }
 ];
 
@@ -474,22 +570,28 @@ let current = null;
 const overlay = document.getElementById('overlay');
 
 // Build index
-const list = document.getElementById('chapter-list');
+const listBase = document.getElementById('list-base');
+const listDim  = document.getElementById('list-dim');
+const listClose = document.getElementById('list-close');
+
 CHAPTERS.forEach((ch, i) => {
   const btn = document.createElement('button');
-  btn.className = 'chapter-btn';
-  btn.innerHTML = `<span class="chapter-num">${ch.number}</span><span class="chapter-title-idx">${ch.title}</span>`;
+  btn.className = 'chapter-btn' + (ch.type === 'dim' ? ' dim-chapter' : '');
+  btn.innerHTML = `
+    <span class="ch-num">${ch.number}</span>
+    <span class="ch-info">
+      <span class="ch-title-idx">${ch.title}</span>
+      ${ch.dimName ? `<span class="ch-dim-name">${ch.dimName}</span>` : ''}
+    </span>`;
   btn.addEventListener('click', () => openChapter(i));
-  list.appendChild(btn);
+  if (ch.type === 'base') listBase.appendChild(btn);
+  else if (ch.type === 'dim') listDim.appendChild(btn);
+  else listClose.appendChild(btn);
 });
 
 function transition(fn) {
   overlay.classList.add('fading');
-  setTimeout(() => {
-    fn();
-    overlay.classList.remove('fading');
-    window.scrollTo({ top: 0, behavior: 'instant' });
-  }, 280);
+  setTimeout(() => { fn(); overlay.classList.remove('fading'); window.scrollTo({top:0,behavior:'instant'}); }, 280);
 }
 
 function openChapter(idx) {
@@ -514,49 +616,69 @@ function goHome() {
 function navChapter(dir) {
   const next = current + dir;
   if (next < 0 || next >= CHAPTERS.length) return;
-  transition(() => {
-    current = next;
-    renderChapter();
-  });
+  transition(() => { current = next; renderChapter(); });
 }
 
 function renderChapter() {
   const ch = CHAPTERS[current];
   document.getElementById('ch-number').textContent = ch.number;
+  document.getElementById('ch-dimname').textContent = ch.dimName;
+  document.getElementById('ch-dimname').style.display = ch.dimName ? 'block' : 'none';
   document.getElementById('ch-title').textContent = ch.title;
-  const body = document.getElementById('ch-body');
-  body.innerHTML = ch.content.map(p => `<p>${p}</p>`).join('');
 
-  const prevBtn = document.getElementById('btn-prev');
-  const nextBtn = document.getElementById('btn-next');
-  const prevLabel = document.getElementById('prev-label');
-  const nextLabel = document.getElementById('next-label');
-  const progress = document.getElementById('nav-progress');
+  // Formula
+  const fBox = document.getElementById('ch-formula');
+  if (ch.formula) {
+    fBox.innerHTML = `
+      <div class="formula-box">
+        <div class="formula-label">Fórmula de la dimensión</div>
+        <div class="formula-expr">${ch.formula.expr}</div>
+        <div class="formula-desc">${ch.formula.desc}</div>
+      </div>`;
+  } else { fBox.innerHTML = ''; }
 
-  prevBtn.disabled = current === 0;
-  nextBtn.disabled = current === CHAPTERS.length - 1;
-  prevLabel.textContent = current > 0 ? CHAPTERS[current - 1].number : '';
-  nextLabel.textContent = current < CHAPTERS.length - 1 ? CHAPTERS[current + 1].number : '';
-  progress.textContent = `${current + 1} / ${CHAPTERS.length}`;
+  // Body
+  document.getElementById('ch-body').innerHTML = ch.content.map(p=>`<p>${p}</p>`).join('');
+
+  // Practices
+  const prac = document.getElementById('ch-practices');
+  if (ch.asanas && ch.asanas.length) {
+    prac.innerHTML = `
+      <div class="practice-section">
+        <div class="practice-title">Āsanas — Posturas</div>
+        <div class="practice-grid">${ch.asanas.map(a=>`
+          <div class="practice-card">
+            <div class="practice-card-title">${a.name}</div>
+            <div class="practice-card-desc">${a.desc}</div>
+          </div>`).join('')}
+        </div>
+      </div>
+      <div class="practice-section">
+        <div class="practice-title">Prāṇāyāma — Respiración</div>
+        <div class="practice-grid">${ch.pranayama.map(b=>`
+          <div class="practice-card breath">
+            <div class="practice-card-title">${b.name}</div>
+            <div class="practice-card-desc">${b.desc}</div>
+          </div>`).join('')}
+        </div>
+      </div>`;
+  } else { prac.innerHTML = ''; }
+
+  // Nav
+  document.getElementById('btn-prev').disabled = current === 0;
+  document.getElementById('btn-next').disabled = current === CHAPTERS.length - 1;
+  document.getElementById('prev-label').textContent = current > 0 ? CHAPTERS[current-1].number : '';
+  document.getElementById('next-label').textContent = current < CHAPTERS.length-1 ? CHAPTERS[current+1].number : '';
+  document.getElementById('nav-progress').textContent = `${current+1} / ${CHAPTERS.length}`;
 }
 
 // Starfield
 const sf = document.getElementById('starfield');
-for (let i = 0; i < 90; i++) {
+for (let i = 0; i < 110; i++) {
   const s = document.createElement('div');
   s.className = 'star';
-  const size = Math.random() < 0.15 ? 2 : 1;
-  const minOp = (0.05 + Math.random() * 0.1).toFixed(2);
-  const maxOp = (0.3 + Math.random() * 0.5).toFixed(2);
-  s.style.cssText = `
-    width:${size}px; height:${size}px;
-    left:${Math.random()*100}%;
-    top:${Math.random()*100}%;
-    --d:${3+Math.random()*5}s;
-    --delay:-${Math.random()*6}s;
-    --min-op:${minOp};
-    --max-op:${maxOp};
-  `;
+  const size = Math.random() < 0.12 ? 2 : 1;
+  s.style.cssText = `width:${size}px;height:${size}px;left:${Math.random()*100}%;top:${Math.random()*100}%;--d:${3+Math.random()*5}s;--delay:-${Math.random()*7}s;--min-op:${(0.05+Math.random()*0.1).toFixed(2)};--max-op:${(0.3+Math.random()*0.5).toFixed(2)}`;
   sf.appendChild(s);
 }
 </script>
